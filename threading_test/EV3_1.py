@@ -6,42 +6,54 @@ from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait, StopWatch, DataLog
 from pybricks.robotics import DriveBase
 from pybricks.media.ev3dev import SoundFile, ImageFile, Font
+
 from pybricks.messaging import BluetoothMailboxServer, TextMailbox, NumericMailbox
 
 import urandom
 from random import randint
 import threading
 
-from songs import SONG_SIMPLE, SONG_TEST
-from player import Player
 
 portlist = [Port.A, Port.B, Port.C, Port.D]
 
-LOCAL_NOTES = [0, 1, 2, 3]  # Define which notes this EV3 can play
 
+def run_motor(ev3, port):
+    return_angle = 5
 
+    try:
+        motor = Motor(port)
+        motor.control.target_tolerances(speed=500, position=1) # change tollerance settings
+    
+        while True:
+            motor.dc(100) #move motor at 100% speed
+            if motor.angle() >= return_angle:
+                motor.hold() # when target angle is reached, hold position
+                break
+    
+        motor.run_target(-500, 0, then=Stop.HOLD, wait=True) # return to 0 position
+    except Exception as e:
+        print("Error running motor at: {}".format(port), e)
+    return
 
-def run_motor(ev3, motor):
+def run_motor2(ev3, motor):
     motor.dc(100) #move motor at 100% speed
     wait(40)
     motor.hold() # when target angle is reached, hold position
     motor.run_target(-500, 0, then=Stop.HOLD, wait=True) # return to 0 position
+
     return
     
 
-def reset_motor_angles():
-    for port in portlist:
-        try:
-            motor = Motor(port)
-            motor.run_until_stalled(-100, duty_limit=10) # Move motor until endstop
-            motor.reset_angle(0) # Reset angle to zero
-            print("Motor angle reset at: {}".format(port))
-            pass
-        except Exception as e:
-            print("Error resetting motor angle at: {}".format(port), e) # print error message
-            pass
-    print("All motor angles reset.")
-    return
+def reset_motor_angle(port):
+    try:
+        motor = Motor(port)
+        motor.run_until_stalled(-100, duty_limit=10) # Move motor until endstop
+        motor.reset_angle(0) # Reset angle to zero
+        print("Motor angle reset at: {}".format(port))
+        return
+    except Exception as e:
+        print("Error resetting motor angle at: {}".format(port), e)
+        return
 
 
 def establish_bluetooth_connection(ev3):
@@ -83,8 +95,6 @@ def establish_bluetooth_connection(ev3):
 
 
 def sync_clocks(server, clock, ev3):
-
-
     syncbox = NumericMailbox('synchronisation', server)
     wait(2000)
 
@@ -130,8 +140,6 @@ def sync_clocks(server, clock, ev3):
     wait(calculated_time_difference - 10)
     clock.resume()
 
-
-
 def main():
     ev3 = EV3Brick()
     ev3.screen.set_font(Font(size=50, bold=True))
@@ -139,34 +147,102 @@ def main():
     clock = StopWatch() # create clock
     #server = establish_bluetooth_connection(ev3) # return server object from bluetooth connection
     #sync_clocks(server, clock, ev3) # sync clocks between server and client
+    #reset_motor_angle()
 
-    reset_motor_angles()
 
-    player = Player(
-        clock=clock,
-        strike_function=run_motor,
-        local_notes=LOCAL_NOTES
-    )
 
-    player.create_threadings(ev3, portlist)
+    for port in portlist:
+        # reset motor angle
+        reset_motor_angle(port)
 
-    '''
-    while True:
-        if Button.CENTER in ev3.buttons.pressed():
-            # play song
-            start_time = clock.time() + 2000  # delayed start
-            player.play(SONG_SIMPLE, start_time, ev3)
-            break'''
+    for port in portlist:
+        # activate motor
+        m = Motor(port)
+        m.control.target_tolerances(speed=500, position=1)
+        run_motor2(ev3, m)
+        pass
+
+    motor1 = Motor(Port.A)
+    motor1.control.target_tolerances(speed=500, position=1)
+    m1 = threading.Thread(target=run_motor2, args=(ev3, motor1))
+
+    motor2 = Motor(Port.B)
+    motor2.control.target_tolerances(speed=500, position=1)
+    m2 = threading.Thread(target=run_motor2, args=(ev3, motor2))
+
+    motor3 = Motor(Port.C)
+    motor3.control.target_tolerances(speed=500, position=1)
+    m3 = threading.Thread(target=run_motor2, args=(ev3, motor3))
+
+    motor4 = Motor(Port.D)
+    motor4.control.target_tolerances(speed=500, position=1)
+    m4 = threading.Thread(target=run_motor2, args=(ev3, motor4))
+
+    motor_threading_list = [m1, m2, m3, m4]
+
+    for t in motor_threading_list:
+        t.start()
+        wait(250)
     
-    while True:
-        if Button.CENTER in ev3.buttons.pressed():
-            # play song
-            start_time = clock.time()
-            player.play(SONG_TEST, start_time, ev3)
-            while Button.CENTER in ev3.buttons.pressed():
-                pass
+    for t in motor_threading_list:
+        t.start()
+        wait(200)
+
+    for t in motor_threading_list:
+        t.start()
+        wait(150)
+
+    for t in motor_threading_list:
+        t.start()
+        wait(100)
+
+    for t in motor_threading_list:
+        t.start()
+        wait(50)
+
+    wait(1000)
 
 
 
-if __name__ == "__main__":
-    main()
+def test():
+    ev3 = EV3Brick()
+    ev3.screen.set_font(Font(size=50, bold=True))
+
+    clock = StopWatch() # create clock
+    reset_motor_angle(Port.A)
+
+    cycle_count = 5
+
+    times = [0] * cycle_count
+
+    motor = Motor(Port.A)
+    print("Motor limits:", end=" ")
+    print(motor.control.limits())
+
+    print("Motor PID:", end=" ")
+    print(motor.control.pid())
+
+    print("Motor target tolerances:", end=" ")
+    print(motor.control.target_tolerances())
+
+    motor.control.target_tolerances(speed=500, position=1)
+    #motor.control.limits(speed=1000, acceleration=1500)
+
+    for i in range(cycle_count):
+        time_before = clock.time()
+        run_motor2(ev3, motor)
+        time_after = clock.time()
+
+        times[i] = time_after - time_before
+        print("motor run time (ms):", times[i])
+
+        wait(100)
+
+    print("Average motor run time (ms):", sum(times)/cycle_count)
+
+
+
+
+
+main()
+#test()
