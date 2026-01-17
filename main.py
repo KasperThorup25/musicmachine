@@ -12,143 +12,35 @@ import urandom
 from random import randint
 import threading
 
-from songs import SONG_SIMPLE, SONG_TEST
+from songs import songs
 from player import Player
+from wireless import Server
 
 portlist = [Port.A, Port.B, Port.C, Port.D]
-
 LOCAL_NOTES = [0, 1, 2, 3]  # Define which notes this EV3 can play
-
-
-
-def run_motor(ev3, motor):
-    motor.dc(100) #move motor at 100% speed
-    wait(40)
-    motor.hold() # when target angle is reached, hold position
-    motor.run_target(-500, 0, then=Stop.HOLD, wait=True) # return to 0 position
-    return
-    
-
-def reset_motor_angles():
-    for port in portlist:
-        try:
-            motor = Motor(port)
-            motor.run_until_stalled(-100, duty_limit=10) # Move motor until endstop
-            motor.reset_angle(0) # Reset angle to zero
-            print("Motor angle reset at: {}".format(port))
-            pass
-        except Exception as e:
-            print("Error resetting motor angle at: {}".format(port), e) # print error message
-            pass
-    print("All motor angles reset.")
-    return
-
-
-def establish_bluetooth_connection(ev3):
-    # make handshake protocol here
-    server = BluetoothMailboxServer()
-    mbox = NumericMailbox('handshake', server)
-
-    # The server must be started before the client!
-    print('waiting for connection...')  
-    server.wait_for_connection()
-    print('connected!')
-    wait(2000)
-
-
-    random_number = randint(1, 100)
-
-    mbox.send(random_number) # send random number to client
-    print('random number sent, now waiting for response...')
-    mbox.wait()
-    print('response received!')
-    recieved_number = mbox.read()
-    
-    if recieved_number == random_number + 1: # check if client added 1
-        print("Handshake successfull!")
-        for i in range(3):
-            ev3.light.on(Color.ORANGE)
-            wait(50)
-            ev3.light.off()
-            wait(50)
-    else:
-        print("Handshake failed.")
-        for i in range(3):
-            ev3.light.on(Color.RED)
-            wait(50)
-            ev3.light.off()
-            wait(50)
-
-    return server
-
-
-def sync_clocks(server, clock, ev3):
-
-
-    syncbox = NumericMailbox('synchronisation', server)
-    wait(2000)
-
-    sync_sycles = 10
-    syncbox.send(sync_sycles)  # send number of sync cycles to client
-    wait(2000)
-
-    time_difference = [0] * sync_sycles
-
-    for i in range(sync_sycles):  # sync clocks x times
-        syncbox.send(clock.time())  # send current time to client
-        print("clocktime sent")
-        
-        syncbox.wait()
-        client_time = syncbox.read()  # read time sent back from client
-
-        time_difference[i] = clock.time() - client_time
-
-        ev3.light.on(Color.ORANGE)
-        wait(100)
-        ev3.light.off()
-        wait(100)
-
-
-    syncbox.wait()
-    recieved_average = syncbox.read()  # read average time difference from client
-
-    print("Recieved average difference (ms):", recieved_average)
-
-    average_difference = sum(time_difference) / sync_sycles
-    print("Average time difference (ms):", average_difference)
-
-    #calculnating avg delay time for bluetooth communication
-    calculated_time_difference = (average_difference + recieved_average) / 2
-    print("Calculated time difference between EV3 hubs (ms):", calculated_time_difference)
-
-    estimated_avg_bluetooth_delay = average_difference - calculated_time_difference
-    print("Estimated average bluetooth delay (ms):", estimated_avg_bluetooth_delay)
-
-    # adjusting clock based on calculated time difference + magic delay compensation when pausing and resuming clock
-    print("adjusting clock...")
-    clock.pause()
-    wait(calculated_time_difference - 10)
-    clock.resume()
-
+ALL_NOTES = [0, 1, 2, 3, 4, 5, 6, 7]
 
 
 def main():
     ev3 = EV3Brick()
-    ev3.screen.set_font(Font(size=50, bold=True))
+    ev3.screen.set_font(Font(size=30, bold=False))
 
-    clock = StopWatch() # create clock
-    #server = establish_bluetooth_connection(ev3) # return server object from bluetooth connection
-    #sync_clocks(server, clock, ev3) # sync clocks between server and client
+    clock = StopWatch()
 
-    reset_motor_angles()
+    server = Server(ev3, clock)
 
     player = Player(
+        ev3=ev3,
         clock=clock,
-        strike_function=run_motor,
-        local_notes=LOCAL_NOTES
+        local_notes=LOCAL_NOTES,
+        portlist=portlist
     )
 
-    player.create_threadings(ev3, portlist)
+    wait(200)
+    server.send_task(0) # send song mode task to the other ev3
+    wait(200)
+
+
 
     '''
     while True:
@@ -158,13 +50,37 @@ def main():
             player.play(SONG_SIMPLE, start_time, ev3)
             break'''
     
+    
+    play_delay = 1000 # play song 1 second delayed
+    selected_song_index = 0
     while True:
+        ev3.screen.print("Song mode")
+        ev3.screen.print("Song:", selected_song_index)
         if Button.CENTER in ev3.buttons.pressed():
-            # play song
-            start_time = clock.time()
-            player.play(SONG_TEST, start_time, ev3)
+            # send song and play song
+            start_time = clock.time() + play_delay
+            server.send_song(songs[selected_song_index], start_time) # tell client ev3 to play song at start time
+            player.play(songs[selected_song_index], start_time) # play song on server ev3 at start time
+            
             while Button.CENTER in ev3.buttons.pressed():
                 pass
+
+        if Button.LEFT in ev3.buttons.pressed():
+            # previous song
+            selected_song_index -= 1
+            if selected_song_index < 0:
+                selected_song_index = len(songs) - 1
+            while Button.LEFT in ev3.buttons.pressed():
+                pass
+        if Button.RIGHT in ev3.buttons.pressed():
+            # next song
+            selected_song_index += 1
+            if selected_song_index >= len(songs):
+                selected_song_index = 0
+            while Button.RIGHT in ev3.buttons.pressed():
+                pass
+        wait(50)
+        ev3.screen.clear()
 
 
 

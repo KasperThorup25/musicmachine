@@ -116,6 +116,15 @@ class Server:
         notebox.send(note)
         return
 
+    def send_song (self, song, start_time):
+        songbox = NumericMailbox('song', self.server)
+        print("sending song: ", song.song_number)
+        songbox.send(song.song_number)
+        wait(200)
+        print("sending start time: ", start_time)
+        songbox.send(start_time)
+        return
+
 
 class Client:
     def __init__(self, ev3, clock):
@@ -198,3 +207,13 @@ class Client:
         print("waiting for note...")
         notebox.wait()
         return int(notebox.read())
+
+    def wait_for_song(self):
+        songbox = NumericMailbox('song', self.client)
+        print("waiting for song...")
+        songbox.wait()
+        song_number = int(songbox.read())
+        print("waiting for start time...")
+        songbox.wait()
+        start_time = int(songbox.read())
+        return song_number, start_time

@@ -27,7 +27,7 @@ class Player:
 
             for note in event["notes"]:
                 if note in self.local_notes:
-                    self.motor_threading_list[self.local_notes(note)].start() # play note in separate thread
+                    self.motor_threading_list[self.local_notes.index(note)].start() # play note in separate thread
                     print("Playing note:", note)
     
     def play_note(self, note):

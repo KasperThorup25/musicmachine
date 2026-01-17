@@ -9,7 +9,7 @@ from pybricks.media.ev3dev import SoundFile, ImageFile, Font
 
 from pybricks.messaging import BluetoothMailboxClient, TextMailbox, NumericMailbox
 
-from songs import SONG_SIMPLE, SONG_TEST
+from songs import songs
 from player import Player
 from wireless import *
 
@@ -33,24 +33,28 @@ def main():
         portlist=portlist
     )
 
-    while True:
-        task = client.wait_for_task()
-        print("Task recieved: ", task)
+    task = client.wait_for_task()
+    print("Task recieved: ", task)
+    
 
-        if task in tasklist:
-            if tasklist[task] == "TUNING MODE":
-                ev3.screen.print("Tuning mode")
-                selected_note_index = 0    
-                while True:
-                    note = client.wait_for_note()
-                    print("Note recieved: ", note)
-                    if note in LOCAL_NOTES:
-                        player.play_note(note)
-            elif tasklist[task] == "SONG MODE":
-                # play song
-                player.play(SONG_SIMPLE, clock.time())
-        else:
-            print("Unknown task received.")
+    if task in tasklist:
+        if tasklist[task] == "TUNING MODE":
+            ev3.screen.print("Tuning mode")
+            while True:
+                note = client.wait_for_note()
+                print("Note recieved: ", note)
+                if note in LOCAL_NOTES:
+                    player.play_note(note)
+
+        elif tasklist[task] == "SONG MODE":
+            ev3.screen.print("Song mode")
+            while True:
+                song_number, song_start_time = client.wait_for_song()
+                player.play(songs[song_number], song_start_time)
+                print("Playing {} at start time: {}".format(songs[song_number].name, song_start_time))
+
+    else:
+        print("Unknown task received.")
 
 
 main()

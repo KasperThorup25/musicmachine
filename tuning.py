@@ -38,7 +38,7 @@ def main():
     selected_note_index = 0    
 
     wait(200)
-    server.send_task(1) # send tuning mode task
+    server.send_task(1) # send tuning mode task to the other ev3
     wait(200)
 
     while True:
