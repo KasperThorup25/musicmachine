@@ -12,7 +12,7 @@ import urandom
 from random import randint
 import threading
 
-from songs import SONG_SIMPLE, SONG_TEST
+from songs import songs
 from player import Player
 from wireless import Server
 

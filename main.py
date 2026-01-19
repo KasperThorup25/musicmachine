@@ -39,17 +39,6 @@ def main():
     wait(200)
     server.send_task(0) # send song mode task to the other ev3
     wait(200)
-
-
-
-    '''
-    while True:
-        if Button.CENTER in ev3.buttons.pressed():
-            # play song
-            start_time = clock.time() + 2000  # delayed start
-            player.play(SONG_SIMPLE, start_time, ev3)
-            break'''
-    
     
     play_delay = 1000 # play song 1 second delayed
     selected_song_index = 0
