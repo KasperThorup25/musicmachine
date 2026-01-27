@@ -13,10 +13,21 @@ class Player:
         self.clock = clock
         self.local_notes = local_notes
         self.portlist = portlist
+        self.motors = [0] * 4
         self.motor_threading_list = [0] * 4  # Placeholder for motor threadings
 
         self.reset_motor_angles()  # reset motor angles on init
         self.create_threadings(portlist) # create motor threadings
+
+    def play_note(self, note):
+        if note in self.local_notes:
+            if self.motors[self.local_notes.index(note)].angle() < 5: #only activate motor if it is done
+                self.motor_threading_list[self.local_notes.index(note)].start() # play note in separate thread
+                print("Playing note:", note)
+            else: print("Motor did not run because it's in use")
+        else:
+            print("Note not in local notes")
+        return
 
     def play(self, song, start_time_ms):
         for event in song.events:
@@ -26,17 +37,7 @@ class Player:
                 pass
 
             for note in event["notes"]:
-                if note in self.local_notes:
-                    self.motor_threading_list[self.local_notes.index(note)].start() # play note in separate thread
-                    print("Playing note:", note)
-    
-    def play_note(self, note):
-        if note in self.local_notes:
-            self.motor_threading_list[self.local_notes.index(note)].start() # play note in separate thread
-            print("Playing note:", note)
-        else:
-            print("Note not in local notes")
-        return
+                self.play_note(note)
 
     # This is the fundamental function that runs 1 motor each time its called
     def run_motor(self, ev3, motor):
@@ -64,8 +65,8 @@ class Player:
     # This function creates a separate thread for each motor
     def create_threadings(self, portlist):
         for port in portlist:
-            m = Motor(port)
-            m.control.target_tolerances(speed=500, position=1) # This line is very important for the run_motor function to work properly
-            self.motor_threading_list[portlist.index(port)] = threading.Thread(target=self.run_motor, args=(self.ev3, m))
+            self.motors[portlist.index(port)] = Motor(port)
+            self.motors[portlist.index(port)].control.target_tolerances(speed=500, position=1) # This line is very important for the run_motor function to work properly
+            self.motor_threading_list[portlist.index(port)] = threading.Thread(target=self.run_motor, args=(self.ev3, self.motors[portlist.index(port)]))
         print("Motor threadings created.")
         return

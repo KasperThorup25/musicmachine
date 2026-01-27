@@ -23,7 +23,7 @@ ALL_NOTES = [0, 1, 2, 3, 4, 5, 6, 7]
 
 def main():
     ev3 = EV3Brick()
-    ev3.screen.set_font(Font(size=30, bold=False))
+    ev3.screen.set_font(Font(size=20, bold=False))
 
     clock = StopWatch()
 
@@ -45,6 +45,7 @@ def main():
     while True:
         ev3.screen.print("Song mode")
         ev3.screen.print("Song:", selected_song_index)
+        ev3.screen.print(songs[selected_song_index].name)
         if Button.CENTER in ev3.buttons.pressed():
             # send song and play song
             start_time = clock.time() + play_delay
