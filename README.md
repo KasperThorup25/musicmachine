@@ -1,7 +1,7 @@
-This project contains the code used to play songs on 8 glasses with differen water levels. The project is demonstrated here (Youtube Link).
+This project contains the code used to play songs on 8 glasses with different water levels. The project is demonstrated here (Youtube Link).
 
 If you want to create anything like this, micro-python need to be flashed on to a micro sd card and inserted in to the EV3's as described here: https://pybricks.com/ev3-micropython/startinstall.html
-This allows direct python programing to the hub via a usb cable, and enables more complexity than the official LEGO EV3CLASSROOM app, which uses block code programming.
+This allows direct python programing to the hub via a usb cable, and enables more complexity than the official LEGO EV3CLASSROOM app.
 
 **The project consist of some folders:**
 1. Bluetooth_sync_test
@@ -35,8 +35,4 @@ _test.py_ is just a simple test program that can run independent, and runs the m
 When using the main.py and tunning.py the program will only work if there is a hub running second_ev3.py. 
 They will automatically connect, but its important that the second_ev3.py is always turned on last, otherwise the bluetooth connection will fail.
 
-Remeber if the universal files are getting updated (such as addign a song), they need to get uploaded to both EV3's
-
-
-
-The two EV3's use a bluetooth connection, with the micro-python included bluetoothmailbox system.  
+Remeber if the universal files are getting updated (such as adding a song), they need to get uploaded to both EV3's

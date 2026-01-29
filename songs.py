@@ -4,16 +4,6 @@
 
 NOTES = [1154, 1192, 1231, 1271, 1313, 1356, 1401, 1448] # this is the frequencies the glass vibrate at
 
-# Notes (for redability)
-C = 0
-D = 1
-E = 2
-F = 3
-G = 4
-A = 5
-B = 6
-C5 = 7
-
 songs = []
 
 class Song:
@@ -620,8 +610,7 @@ songs.append(Song(      # Mapping used: MEEE - Clocks
 ))
 
 # --------------------^ Songs for the video ^-----------------------
-#-------------------”¯}$^^^¨¨¨¨^^~~~~^^¨¨^^“¡]§¡“§]¡“§]“¡§]“¡]§
-
+# below is songs used for testing the system
 
 songs.append(Song(      # Stimple ascend
     name="Simple ascend and descend",

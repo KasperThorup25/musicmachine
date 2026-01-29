@@ -24,11 +24,11 @@ def main():
     ev3 = EV3Brick()
     ev3.screen.set_font(Font(size=30, bold=False))
 
-    clock = StopWatch()
+    clock = StopWatch() # start clock
 
     server = Server(ev3, clock)
 
-    player = Player(
+    player = Player( # create player object
         ev3=ev3,
         clock=clock,
         local_notes=LOCAL_NOTES,
@@ -44,14 +44,15 @@ def main():
     while True:
         ev3.screen.print("Tuning mode")
         ev3.screen.print("Note:", selected_note_index)
+
         if Button.CENTER in ev3.buttons.pressed():
             if selected_note_index in LOCAL_NOTES:
-                player.play_note(LOCAL_NOTES[selected_note_index])
+                player.play_note(LOCAL_NOTES[selected_note_index]) # play note
             else:
-                # send note to other ev3
-                server.send_note(selected_note_index)
+                server.send_note(selected_note_index) # send note to other ev3
             while Button.CENTER in ev3.buttons.pressed():
                 pass
+
         if Button.LEFT in ev3.buttons.pressed():
             # previous note
             selected_note_index -= 1
@@ -59,6 +60,7 @@ def main():
                 selected_note_index = len(ALL_NOTES) - 1
             while Button.LEFT in ev3.buttons.pressed():
                 pass
+            
         if Button.RIGHT in ev3.buttons.pressed():
             # next note
             selected_note_index += 1
@@ -66,6 +68,7 @@ def main():
                 selected_note_index = 0
             while Button.RIGHT in ev3.buttons.pressed():
                 pass
+
         wait(50)
         ev3.screen.clear()
 

@@ -20,6 +20,7 @@ portlist = [Port.A, Port.B, Port.C, Port.D]
 LOCAL_NOTES = [0, 1, 2, 3]  # Define which notes this EV3 can play
 ALL_NOTES = [0, 1, 2, 3, 4, 5, 6, 7]
 
+# same function as in player.py to run the motor
 def run_motor(ev3, motor):
         motor.dc(100) #move motor at 100% speed
         wait(40)
@@ -31,6 +32,7 @@ def main():
     ev3 = EV3Brick()
     wait(2000)
 
+    # setup motor
     motor = Motor(Port.D)
     motor.control.target_tolerances(speed=500, position=1)
     motor.run_until_stalled(-100, duty_limit=10) # Move motor until endstop
@@ -40,6 +42,5 @@ def main():
         if Button.CENTER in ev3.buttons.pressed():
             run_motor(ev3, motor)
         wait(50)
-
 
 main()

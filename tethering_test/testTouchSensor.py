@@ -13,6 +13,15 @@ import socket
 import sys
 import time
 
+#  -------------------------------------------------------------------------------------
+# | This code is from this website: https://gitlab.com/LeeJenkins/RemoteEV3/-/tree/main |
+#  -------------------------------------------------------------------------------------
+
+# This file was used to experiment with threading between two EV3's. Which indeed was achieved but was not chosed for this project because of complexity
+# Reminder: 
+# - Cable needed: USB-A to MINI-USB
+# - The EV3 running this program must have the cable plugged into the USB A port 
+
 # This program requires LEGO EV3 MicroPython v2.0 or higher.
 
 # Create your objects here.

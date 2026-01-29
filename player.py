@@ -6,7 +6,7 @@ from pybricks.parameters import Port, Stop, Direction, Button, Color
 from pybricks.tools import wait
 
 
-# The Player class is used by multiple different files to play the songs written in songs.py
+# The Player class is used by to play the songs written in songs.py
 class Player:
     def __init__(self, ev3, clock, local_notes, portlist):
         self.ev3 = ev3
@@ -16,9 +16,11 @@ class Player:
         self.motors = [0] * 4
         self.motor_threading_list = [0] * 4  # Placeholder for motor threadings
 
-        self.reset_motor_angles()  # reset motor angles on init
+        # fucntions running when object gets initialized
+        self.reset_motor_angles()  # reset motor angles
         self.create_threadings(portlist) # create motor threadings
 
+    # function to play 1 note (0..7)
     def play_note(self, note):
         if note in self.local_notes:
             if self.motors[self.local_notes.index(note)].angle() < 5: #only activate motor if it is done
@@ -29,6 +31,7 @@ class Player:
             print("Note not in local notes")
         return
 
+    # function to play a song from songs.py
     def play(self, song, start_time_ms):
         for event in song.events:
             target = start_time_ms + event["time_ms"]

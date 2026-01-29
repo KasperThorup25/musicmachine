@@ -11,6 +11,9 @@ from pybricks.media.ev3dev import SoundFile, ImageFile, Font
 
 from pybricks.messaging import BluetoothMailboxClient, TextMailbox, NumericMailbox
 
+# This file was used when testing the bluetooth connection between two EV3 hubs
+# The EV3 running this program must be turned on AFTER the server EV3
+
 
 
 

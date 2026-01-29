@@ -18,9 +18,9 @@ class Server:
     def __init__(self, ev3, clock):
         self.ev3 = ev3
         self.clock = clock
-        self.server = self.establish_bluetooth_connection_SERVER(ev3)
+        self.server = self.establish_bluetooth_connection_SERVER(ev3) # connect to client
 
-        self.sync_clocks_SERVER(clock, ev3)
+        self.sync_clocks_SERVER(clock, ev3) # sync clocks
 
     def establish_bluetooth_connection_SERVER(self, ev3):
         # make handshake protocol here
@@ -130,9 +130,9 @@ class Client:
     def __init__(self, ev3, clock):
         self.ev3 = ev3
         self.clock = clock
-        self.client = self.establish_bluetooth_connection_CLIENT(ev3)
+        self.client = self.establish_bluetooth_connection_CLIENT(ev3) # connect to server
 
-        self.sync_clocks_CLIENT(self.client, clock, ev3)
+        self.sync_clocks_CLIENT(self.client, clock, ev3) # sync clocks
 
     def establish_bluetooth_connection_CLIENT(self, ev3):
         SERVER_NAME = 'ev3dev'

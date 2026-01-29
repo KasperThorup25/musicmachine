@@ -16,6 +16,7 @@ from songs import songs
 from player import Player
 from wireless import Server
 
+
 portlist = [Port.A, Port.B, Port.C, Port.D]
 LOCAL_NOTES = [0, 1, 2, 3]  # Define which notes this EV3 can play
 ALL_NOTES = [0, 1, 2, 3, 4, 5, 6, 7]
@@ -25,11 +26,11 @@ def main():
     ev3 = EV3Brick()
     ev3.screen.set_font(Font(size=20, bold=False))
 
-    clock = StopWatch()
+    clock = StopWatch() # start local clock
 
-    server = Server(ev3, clock)
+    server = Server(ev3, clock) # create bluetooth connection
 
-    player = Player(
+    player = Player( # setup Player object
         ev3=ev3,
         clock=clock,
         local_notes=LOCAL_NOTES,
@@ -47,8 +48,7 @@ def main():
         ev3.screen.print("Song:", selected_song_index)
         ev3.screen.print(songs[selected_song_index].name)
         if Button.CENTER in ev3.buttons.pressed():
-            # send song and play song
-            start_time = clock.time() + play_delay
+            start_time = clock.time() + play_delay # calculate start time
             server.send_song(songs[selected_song_index], start_time) # tell client ev3 to play song at start time
             player.play(songs[selected_song_index], start_time) # play song on server ev3 at start time
             
@@ -62,6 +62,7 @@ def main():
                 selected_song_index = len(songs) - 1
             while Button.LEFT in ev3.buttons.pressed():
                 pass
+
         if Button.RIGHT in ev3.buttons.pressed():
             # next song
             selected_song_index += 1
@@ -69,10 +70,9 @@ def main():
                 selected_song_index = 0
             while Button.RIGHT in ev3.buttons.pressed():
                 pass
+
         wait(50)
         ev3.screen.clear()
-
-
 
 if __name__ == "__main__":
     main()

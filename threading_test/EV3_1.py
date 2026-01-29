@@ -13,6 +13,8 @@ import urandom
 from random import randint
 import threading
 
+# This file was used to test multi threading on an EV3 (multi tasking)
+# Result: Its possible to some extend, smaller funtions can run simultanuasly 
 
 portlist = [Port.A, Port.B, Port.C, Port.D]
 
@@ -145,12 +147,7 @@ def main():
     ev3.screen.set_font(Font(size=50, bold=True))
 
     clock = StopWatch() # create clock
-    #server = establish_bluetooth_connection(ev3) # return server object from bluetooth connection
-    #sync_clocks(server, clock, ev3) # sync clocks between server and client
-    #reset_motor_angle()
-
-
-
+    
     for port in portlist:
         # reset motor angle
         reset_motor_angle(port)

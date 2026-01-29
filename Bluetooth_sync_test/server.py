@@ -14,6 +14,9 @@ from pybricks.messaging import BluetoothMailboxServer, TextMailbox, NumericMailb
 import urandom
 from random import randint
 
+# This file was used when testing the bluetooth connection between two EV3 hubs
+# The program establish connection and estimates average bluetooth delay and the time different between the two hubs. Which is used to sync the clocks.
+
 
 def establish_bluetooth_connection(ev3):
     # make handshake protocol here

@@ -13,8 +13,6 @@ from songs import songs
 from player import Player
 from wireless import *
 
-# This program is made for the second EV3 brick in the project showed on brick builds YouTube channel.
-
 portlist = [Port.A, Port.B, Port.C, Port.D]
 LOCAL_NOTES = [4, 5, 6, 7]  # Define which notes this EV3 can play
 
@@ -26,7 +24,7 @@ def main():
 
     client = Client(ev3, clock) # initialize bluetooth connection to server
 
-    player = Player( # create player object to move motors
+    player = Player( # create player object
         ev3=ev3,
         clock=clock,
         local_notes=LOCAL_NOTES,
@@ -44,13 +42,13 @@ def main():
                 note = client.wait_for_note()
                 print("Note recieved: ", note)
                 if note in LOCAL_NOTES:
-                    player.play_note(note)
+                    player.play_note(note) # play selected note
 
         elif tasklist[task] == "SONG MODE":
             ev3.screen.print("Song mode")
             while True:
                 song_number, song_start_time = client.wait_for_song()
-                player.play(songs[song_number], song_start_time)
+                player.play(songs[song_number], song_start_time) # play recieved song at recieved start time
                 print("Playing {} at start time: {}".format(songs[song_number].name, song_start_time))
 
     else:
