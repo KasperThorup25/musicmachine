@@ -1,4 +1,4 @@
-This project contains the code used to play songs on 8 glasses with different water levels. The project is demonstrated here (Youtube Link).
+This project contains the code used to play songs on 8 glasses with different water levels. The project is demonstrated here (https://youtu.be/Sa5ojr7yw0I).
 
 If you want to create anything like this, micro-python need to be flashed on to a micro sd card and inserted in to the EV3's as described here: https://pybricks.com/ev3-micropython/startinstall.html
 This allows direct python programing to the hub via a usb cable, and enables more complexity than the official LEGO EV3CLASSROOM app.
